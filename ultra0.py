@@ -734,7 +734,8 @@ def switch_play(email) -> bool:
     got = current_play_account()
     if got == want:
         ok("Google Play account verified"); return True
-    warn(f"Google Play account did not switch (current: {got or 'unknown'}). Aborting to avoid the wrong account.")
+    warn(redact_emails(f"Google Play account did not switch (current: {got or 'unknown'}). "
+                       "Aborting to avoid the wrong account."))
     return False
 
 

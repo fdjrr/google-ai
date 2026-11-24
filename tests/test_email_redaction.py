@@ -75,6 +75,21 @@ class NarrationIsRedactedTests(unittest.TestCase):
         self.assertNotIn(RAW, output)
         self.assertIn(MASKED, output)
 
+    def test_switch_play_failure_names_masked_account(self):
+        """The mismatch warning prints the *detected* account, so it must be
+        masked too. The earlier narration test aborts at the first ``sh`` call
+        and never reaches this branch."""
+        other = "bob.jones@yahoo.co.uk"
+        with patch.object(mod, "sh", return_value=""), \
+             patch.object(mod, "ui_xml", return_value=""), \
+             patch.object(mod, "current_play_account", return_value=other), \
+             patch.object(mod.time, "sleep"):
+            output = self._capture(mod.switch_play, RAW)
+        self.assertNotIn(other, output)
+        self.assertNotIn(RAW, output)
+        self.assertIn("did not switch", output)
+        self.assertIn(mod.redact_emails(other), output)
+
     def test_processing_banner_is_masked(self):
         # Stub the account step so process() prints its banner and returns
         # without touching a device. add_account returning False short-circuits
